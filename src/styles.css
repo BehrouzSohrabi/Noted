@@ -1,0 +1,95 @@
+* {
+	box-sizing: border-box;
+}
+html,
+body {
+	display: block;
+	margin: 0 !important;
+}
+body {
+	min-width: 285px;
+	font-weight: 400;
+	font-size: 1rem;
+	text-rendering: optimizeLegibility;
+}
+footer,
+header,
+section {
+	display: block;
+    padding: 5px 10px 0;
+}
+nav{
+    padding: 0 10px 5px 0;
+}
+.right {
+	float: right;
+}
+.left {
+	float: left;
+}
+.clear{
+    clear: both;
+}
+.hidden{
+    display: none !important;
+}
+[id^='button-']{
+    opacity: .7;
+    transition: opacity .1s;
+}
+[id^='button-'], input[type='range'] {
+    cursor: pointer;
+}
+[id^='button-']:hover {
+    opacity: 1;
+}
+[class^='icon-'] {
+	display: inline-block;
+	background-repeat: no-repeat;
+	background-size: contain;
+    background-position: center;
+	position: relative;
+	top: 5px;
+	width: 20px;
+	height: 20px;
+}
+.icon-back {
+	background-image: url(assets/back.png);
+}
+.icon-copy {
+	background-image: url(assets/copy.png);
+}
+.icon-clear {
+	background-image: url(assets/clear.png);
+}
+.icon-customize {
+	background-image: url(assets/customize.png);
+}
+.icon-generate {
+	background-image: url(assets/generate.png);
+}
+.icon-github {
+	background-image: url(assets/github.png);
+    opacity: .5;
+}
+.icon-history {
+	background-image: url(assets/history.png);
+}
+.icon-theme {
+	background-image: url(assets/dark.png);
+}
+#button-back{
+    margin-right: -10px;
+    margin-left: 5px;
+}
+/* dark theme */
+body.dark .icon-theme {
+	background-image: url(assets/light.png);
+}
+body.dark {
+	color: #eee;
+	background-color: #2a2a2a;
+}
+body.dark [class^='icon-']{
+    filter: invert(100%);
+}

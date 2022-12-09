@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Noted</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1></h1>
+    <section id="main">
+        <nav>
+            <h2>Secure PZ &#128170;</h2>
+            <div id="button-customize" class="icon-customize right"></div>
+            <div id="button-history" class="icon-history right"></div>
+            <div id="button-theme" class="icon-theme right"></div>
+        </nav>
+        <div id="customize" class="hidden clear">
+            <div id="holder-length">Length<span><input type="range" id="length" min="8" max="16" value="12"><span id="length-value"></span></span></div>
+            <div id="button-lowercase">Lowercase<div class="checkbox"></div></div>
+            <div id="button-uppercase">Uppercase<div class="checkbox"></div></div>
+            <div id="button-numbers">Numbers<div class="checkbox"></div></div>
+            <div id="button-symbols">Symbols<div class="checkbox"></div></div>
+            <div id="button-ambiguous">Ambiguous Characters<div class="checkbox"></div></div>
+            <div id="button-save">Save History<div class="checkbox"></div></div>
+        </div>
+        <div id="generator">
+            <div class="placeholder">
+                <input id="password" spellcheck="false" value="">
+                <div id="button-copy" class="icon-copy right"></div>
+                <div id="button-generate" class="icon-generate right"></div>
+            </div>
+            <div id="feedback">Copied to Clipboard &#128077;</div>
+        </div>
+    </section>
+    <section id="history" class="hidden">
+        <nav>
+            <div id="button-back" class="icon-back"></div>
+            <h2>History</h2>
+            <div id="button-clear" class="icon-clear hidden right"></div>
+        </nav>
+        <ul id="history-list">
+            <li>j7df)3H&@#0N</li>
+            <li>j7df)3H&@#0N</li>
+            <li>j7df)3H&@#0N</li>
+            <li>j7df)3H&@#0N</li>
+        </ul>
+    </section>
+    <footer>
+        Always use unique and complex passwords! <a href="https://github.com/BehrouzSohrabi/SecurePZ" target="_blank" class="icon-github"></a>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>
