@@ -7,6 +7,7 @@
 		<title>Noted</title>
 		<link rel="stylesheet" href="assets/css/quill.snow.css" />
 		<link rel="stylesheet" href="assets/css/styles.css" />
+        <link rel="stylesheet" href="assets/css/highlight.css">
 	</head>
 	<body class="theme-default">
 
@@ -14,9 +15,8 @@
             <input type="text" id="title" placeholder="Untitled Note" />
 
             <button id="options-button" class="icon-options float-right"></button>
-            <button id="add-button" class="icon-add float-right"></button>
             <button id="list-button" class="icon-list float-right"></button>
-            <button id="info-button" class="icon-info float-right"></button>
+            <button id="add-button" class="icon-add float-right"></button>
 
             <section id="options-container" class="hidden">
                 <div class="group">
@@ -32,6 +32,8 @@
                         <li class="color-7"></li>
                         <li class="color-8"></li>
                         <li class="color-9"></li>
+                        <li class="color-10"></li>
+                        <li class="color-11"></li>
                     </ul>
                 </div>
                 <div class="group">
@@ -45,13 +47,12 @@
         </header>
 
         <section id="list-container" class="hidden">
-            <ul id="notes">
-                <li class="color-0"><span></span></li>
-            </ul>
+            <ul id="notes"></ul>
         </section>
 
         <section id="prompt" class="hidden">
-            <div class="text">Delete note forever?</div>
+            <div class="text">Delete Note</div>
+            <div>This action cannot be undone. Are you sure?</div>
             <div>
                 <button id="confirm">Yes</button>
                 <button id="cancel">No</button>
@@ -88,8 +89,10 @@
 					<button class="ql-list" value="bullet"></button>
 				</div>
 			</div>
+            <button id="info-button" class="icon-info float-right"></button>
 		</footer>
 
+        <script src="assets/js/highlight.js"></script>
 		<script src="assets/js/quill.js"></script>
 		<script src="assets/js/notes.js"></script>
 	</body>

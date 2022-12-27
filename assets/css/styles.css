@@ -46,7 +46,9 @@ body {
 	width: 100%;
 	text-align: left;
 }
-
+footer{
+	position: relative;
+}
 header {
 	height: 36px;
 	position: relative;
@@ -90,7 +92,7 @@ section.hidden {
 	right: -1px;
 	left: auto;
 	top: 100%;
-	width: 40%;
+	width: 185px;
 	height: auto;
 	padding: 0 10px 10px;
 	z-index: 2;
@@ -112,7 +114,17 @@ section.hidden {
 	border: none;
 }
 .group .meta {
-	line-height: 2;
+    line-height: 2;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+	font-size: .9em;
+}
+.group .meta span{
+	text-overflow: ellipsis;
+    overflow: hidden;
+	white-space: nowrap;
+	padding-left: 5px;
 }
 
 ul {
@@ -168,6 +180,7 @@ ul li {
 	-webkit-line-clamp: 4;
 	-webkit-box-orient: vertical;
 	overflow: hidden;
+	pointer-events: none;
 }
 
 #prompt, #info {
@@ -181,7 +194,7 @@ ul li {
 }
 
 #prompt div, #info div {
-    width: 160px;
+    width: 170px;
     text-align: center;
     background: white;
     padding: 10px 15px 5px;
@@ -207,14 +220,15 @@ ul li {
 }
 /* quill editor updates */
 .ql-container {
-	border: none;
+	border: none !important;
 }
 .ql-toolbar {
+	border: none !important;
 	padding: 5px;
 	white-space: nowrap;
 }
 .ql-toolbar .ql-formats {
-	border-right: 1px solid #eee;
+    border-right: 1px solid rgba(0,0,0,.1);
 	margin-right: 0 !important;
 	padding-right: 5px;
 }
@@ -237,50 +251,95 @@ ul li {
 	background: #fff;
 	color: #000;
 }
+.ql-editor.ql-blank::before {
+    color: inherit;
+	opacity: .7;
+}
 /* colors */
-.color-0 {
-	background: #333;
-}
-.color-1 {
-	background: #7c1f3f;
-}
-.color-2 {
-	background: #ad6700;
-}
-.color-3 {
-	background: #006d63;
-}
-.color-4 {
-	background: #313e86;
-}
-.color-5 {
-	background: #eee;
-}
-.color-6 {
-	background: #ff9090;
-}
-.color-7 {
-	background: #fff38a;
-}
-.color-8 {
-	background: #b6ffb9;
-}
-.color-9 {
-	background: #69bdff;
-}
 .color-0,
+.theme-color-0 .ql-editor,
+.theme-color-0 footer {
+	background: #222;
+}
 .color-1,
+.theme-color-1 .ql-editor,
+.theme-color-1 footer {
+	background: #461425;
+}
 .color-2,
+.theme-color-2 .ql-editor,
+.theme-color-2 footer {
+	background: #3b2708;
+}
 .color-3,
-.color-4 {
-	color: #eee;
+.theme-color-3 .ql-editor,
+.theme-color-3 footer {
+	background: #093f22;
+}
+.color-4,
+.theme-color-4 .ql-editor,
+.theme-color-4 footer {
+	background: #1a2b68;
 }
 .color-5,
+.theme-color-5 .ql-editor,
+.theme-color-5 footer {
+	background: #3d1a52;
+}
 .color-6,
+.theme-color-6 .ql-editor,
+.theme-color-6 footer {
+	background: #eee;
+}
 .color-7,
+.theme-color-7 .ql-editor,
+.theme-color-7 footer {
+	background: #e5b1b1;
+}
 .color-8,
-.color-9 {
+.theme-color-8 .ql-editor,
+.theme-color-8 footer {
+	background: #eae3a3;
+}
+.color-9,
+.theme-color-9 .ql-editor,
+.theme-color-9 footer {
+	background: #9ac59c;
+}
+.color-10,
+.theme-color-10 .ql-editor,
+.theme-color-10 footer {
+	background: #9ac0de;
+}
+.color-11,
+.theme-color-11 .ql-editor,
+.theme-color-11 footer {
+	background: #e3c8f5;
+}
+.color-0, .theme-color-0 .ql-editor,
+.color-1, .theme-color-1 .ql-editor,
+.color-2, .theme-color-2 .ql-editor,
+.color-3, .theme-color-3 .ql-editor,
+.color-4, .theme-color-4 .ql-editor,
+.color-5, .theme-color-5 .ql-editor {
+	color: #eee;
+}
+.color-6, .theme-color-6 .ql-editor,
+.color-7, .theme-color-7 .ql-editor,
+.color-8, .theme-color-8 .ql-editor,
+.color-9, .theme-color-9 .ql-editor,
+.color-10, .theme-color-10 .ql-editor,
+.color-11, .theme-color-11 .ql-editor {
 	color: #222;
+}
+
+.theme-color-0 #toolbar, .theme-color-0 #info-button,
+.theme-color-1 #toolbar, .theme-color-1 #info-button,
+.theme-color-2 #toolbar, .theme-color-2 #info-button,
+.theme-color-3 #toolbar, .theme-color-3 #info-button,
+.theme-color-4 #toolbar, .theme-color-4 #info-button,
+.theme-color-5 #toolbar, .theme-color-5 #info-button {
+    filter: invert(100%);
 }
 
 /* icons */
@@ -318,6 +377,8 @@ ul li {
 
 .icon-info {
 	background-image: url(../icons/info.png);
+    position: absolute;
     height: 22px;
-    top: 6px;
+    top: 10px;
+    right: 6px;
 }
