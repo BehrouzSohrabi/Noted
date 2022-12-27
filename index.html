@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Noted</title>
+		<link rel="stylesheet" href="assets/css/quill.snow.css" />
+		<link rel="stylesheet" href="assets/css/styles.css" />
+	</head>
+	<body class="theme-default">
+
+        <header>
+            <input type="text" id="title" placeholder="Untitled Note" />
+
+            <button id="options-button" class="icon-options float-right"></button>
+            <button id="add-button" class="icon-add float-right"></button>
+            <button id="list-button" class="icon-list float-right"></button>
+            <button id="info-button" class="icon-info float-right"></button>
+
+            <section id="options-container" class="hidden">
+                <div class="group">
+                    <button class="icon-theme no-action labeled">Theme</button>
+                    <ul id="themes-list">
+                        <li class="color-0"></li>
+                        <li class="color-1"></li>
+                        <li class="color-2"></li>
+                        <li class="color-3"></li>
+                        <li class="color-4"></li>
+                        <li class="color-5"></li>
+                        <li class="color-6"></li>
+                        <li class="color-7"></li>
+                        <li class="color-8"></li>
+                        <li class="color-9"></li>
+                    </ul>
+                </div>
+                <div class="group">
+                    <div class="meta">Created: <span id="created"></span></div>
+                    <div class="meta">Modified: <span id="modified"></span></div>
+                </div>
+                <div class="group">
+                    <button id="delete-button" class="icon-delete labeled">Delete Note</button>
+                </div>
+            </section>
+        </header>
+
+        <section id="list-container" class="hidden">
+            <ul id="notes">
+                <li class="color-0"><span></span></li>
+            </ul>
+        </section>
+
+        <section id="prompt" class="hidden">
+            <div class="text">Delete note forever?</div>
+            <div>
+                <button id="confirm">Yes</button>
+                <button id="cancel">No</button>
+            </div>
+        </section>
+
+        <section id="info" class="hidden">
+            <div class="text">Noted</div>
+            <div>A minimalist, gorgeous and private (local) notebook.</div>
+            <div>
+                <a class="icon-github" href="https://github.com/BehrouzSohrabi/Noted" target="_blank"></a>
+            </div>
+        </section>
+
+		<section id="editor"></section>
+
+		<footer>
+			<div id="toolbar">
+				<div class="ql-formats">
+					<button class="ql-bold"></button>
+					<button class="ql-italic"></button>
+					<button class="ql-underline"></button>
+					<button class="ql-strike"></button>
+					<button class="ql-blockquote"></button>
+					<button class="ql-code-block"></button>
+				</div>
+				<div class="ql-formats">
+					<select class="ql-align"></select>
+					<button class="ql-indent" value="-1"></button>
+					<button class="ql-indent" value="+1"></button>
+				</div>
+				<div class="ql-formats">
+					<button class="ql-list" value="ordered"></button>
+					<button class="ql-list" value="bullet"></button>
+				</div>
+			</div>
+		</footer>
+
+		<script src="assets/js/quill.js"></script>
+		<script src="assets/js/notes.js"></script>
+	</body>
+</html>
