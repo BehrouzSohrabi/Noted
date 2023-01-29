@@ -15,7 +15,11 @@ let optionsButton = document.getElementById('options-button'),
 	promptContainer = document.getElementById('prompt'),
 	createdInfo = document.getElementById('created'),
 	modifiedInfo = document.getElementById('modified'),
-	notesList = document.getElementById('notes');
+	notesList = document.getElementById('notes'),
+	joystickTop = document.getElementById('joystick-top'),
+	joystickRight = document.getElementById('joystick-right'),
+	joystickBottom = document.getElementById('joystick-bottom'),
+	joystickLeft = document.getElementById('joystick-left');
 
 let states = {
 	loading: true,
@@ -23,6 +27,8 @@ let states = {
 	list: false,
 	prompt: false,
 	size: [400, 300],
+	minSize: [370, 220],
+	maxSize: [800, 500],
 	noteIndex: 0
 };
 
@@ -64,6 +70,24 @@ function resizeBody(newSize) {
 	document.body.style.height = states.size[1] + 'px';
 }
 
+function joystickAction(e){
+	let newSize = states.size,
+		minSize = states.minSize,
+		maxSize = states.maxSize;
+	if (e.target.id.endsWith('top') && newSize[1] > minSize[1]){
+		newSize[1] -= 50
+	}else if (e.target.id.endsWith('right') && newSize[0] > minSize[0]){
+		newSize[0] -= 50
+	}else if (e.target.id.endsWith('bottom') && newSize[1] < maxSize[1]){
+		newSize[1] += 50
+	}else if (e.target.id.endsWith('left') && newSize[0] < maxSize[0]){
+		newSize[0] += 50
+	}
+	resizeBody(newSize)
+	// sync with storage
+	sync_options()
+}
+
 function togglePrompt(e) {
 	states.prompt = !states.prompt;
 	promptContainer.className = states.prompt ? '' : 'hidden';
@@ -86,7 +110,6 @@ function toggleNotes() {
 }
 
 function toggleInfo(e) {
-	console.log(e);
 	states.info = !states.info;
 	infoContainer.className = states.info ? '' : 'hidden';
 }
@@ -100,7 +123,7 @@ function titleChanged(e) {
 	notes[states.noteIndex]['modified'] = +new Date()
 	setMeta()
 	// sync with storage
-	sync()
+	sync_notes()
 }
 
 function contentChanged(a, b, source) {
@@ -113,7 +136,7 @@ function contentChanged(a, b, source) {
 	notes[states.noteIndex]['modified'] = +new Date()
 	setMeta()
 	// sync with storage
-	sync()
+	sync_notes()
 }
 
 function selectTheme(e) {
@@ -123,7 +146,7 @@ function selectTheme(e) {
 	// update note
 	notes[states.noteIndex]['theme'] = theme
 	// sync with storage
-	sync()
+	sync_notes()
 }
 
 function setTheme(theme) {
@@ -138,7 +161,6 @@ function setMeta() {
 
 function deleteNote() {
 	states.loading = true
-	console.log(states)
 	// remove from notes array
 	notes.splice(states.noteIndex, 1);
 	// check if there is any notes left
@@ -150,10 +172,8 @@ function deleteNote() {
 }
 
 function loadNote(id) {
-	console.log('find index of id', id)
 	const index = notes.findIndex(item => item.id == id);
 	states.noteIndex = index
-	console.log('update states', index, states.noteIndex)
 	// display the note's title, contents, theme, and meta
 	let note = notes[index]
 	titleInput.value = note.title
@@ -165,12 +185,16 @@ function loadNote(id) {
 	// focus on editor
 	editor.focus()
 	// sync with storage
-	sync()
+	sync_notes()
 	states.loading = false
 }
 
-function sync() {
+function sync_notes() {
 	chrome.storage.sync.set({'notes': notes})
+}
+
+function sync_options() {
+	chrome.storage.sync.set({'options': states})
 }
 
 function addNote() {
@@ -220,7 +244,8 @@ function populateList() {
 		const id = item.id,
 			theme = item.theme,
 			title = item.title.length > 0 ? item.title : 'Untitled Note'
-		list = `<li class="${theme}" id="${id}"><span>${title}</span></li>` + list
+			modified = ago(item['modified'])
+		list = `<li id="${id}"><i class="${theme}"></i><span>${title}</span><a>${modified}</a></li>` + list
 	});
     notesList.innerHTML = list;
 	// update listener
@@ -235,6 +260,7 @@ function selectNote(e) {
 }
 
 function init() {
+	// get notes
 	chrome.storage.sync.get('notes', (data_notes) => {
 		// populate notes array from storage if anything was saved before
 		if (!isEmpty(data_notes.notes)) {
@@ -244,7 +270,14 @@ function init() {
 		}
 		loadLastNote()
 	});
-	resizeBody(states.size);
+	// get options (currently only size)
+	chrome.storage.sync.get('options', (data_options) => {
+		if (!isEmpty(data_options.options)) {
+			resizeBody(data_options.options.size);
+		}else{
+			resizeBody(states.size)
+		}
+	});
 }
 
 // helpers
@@ -289,6 +322,10 @@ setThemeButtons.forEach((setThemeButton) => {
 });
 titleInput.addEventListener('keyup', titleChanged);
 editor.on('text-change', contentChanged);
+joystickTop.addEventListener('click', joystickAction),
+joystickRight.addEventListener('click', joystickAction),
+joystickBottom.addEventListener('click', joystickAction),
+joystickLeft.addEventListener('click', joystickAction);
 
 // init app
 

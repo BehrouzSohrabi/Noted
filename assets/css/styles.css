@@ -109,6 +109,7 @@ section.hidden {
 	align-items: flex-start;
 	border-bottom: 1px solid #ccc;
 	padding: 5px 0;
+    position: relative;
 }
 .group:last-child {
 	border: none;
@@ -154,33 +155,121 @@ ul li {
 	text-align: center;
 }
 
+#resizer {
+    position: absolute;
+    display: block;
+    width: 29px;
+    height: 29px;
+    right: 5px;
+    top: 5px;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0px 12px #fff;
+    background: #bbb;
+}
+
+#resizer span{
+    pointer-events: all;
+    cursor: pointer;
+    position: absolute;
+    transition: all .2s ease;
+    top: 8px;
+    left: 5px;
+    display: block;
+    height: 14px;
+    width: 19px;
+    opacity: .4;
+    min-width: auto;
+    padding: 0 !important;
+    background-size: 73%;
+}
+#resizer span:hover{
+	opacity: 1;
+}
+
+#joystick-top {
+	transform:rotate(-90deg) translateX(10px)
+}
+
+#joystick-right {
+	transform:rotate(.01deg) translateX(10px)
+}
+
+#joystick-bottom {
+	transform:rotate(90deg) translateX(10px);
+}
+
+#joystick-left {
+	transform:rotate(180deg) translateX(10px)
+}
+
 #list-container {
 	background-color: rgba(0, 0, 0, 0.8);
 	z-index: 4;
 }
 
+#notes::before {
+    content: 'Back';
+    display: block;
+    background: #fff url(../icons/back.png) no-repeat 5px 5px;
+    background-size: 25px;
+    padding: 6px 28px 10px;
+    font-size: 1.2em;
+    line-height: 20px;
+    opacity: .85;
+    font-weight: 600;
+    cursor: pointer;
+}
 #notes {
-	display: grid;
-	width: 100%;
-	height: 100%;
-	margin: 0;
-	padding: 10px;
-	grid-template-columns: repeat(3, 1fr);
+    display: flex;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    flex-direction: column;
+    background: linear-gradient(#fff 36px, #eee 36px)
+}
+#notes li *{
+	pointer-events: none;
 }
 #notes li {
-	height: 80px;
-	margin: 10px;
-	padding: 7px 12px;
-	overflow: hidden;
+    line-height: 35px;
+    padding: 0 10px 0 30px;
+    overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    color: #333;
+    border-top: 1px solid #ccc;
+    transition: all .3s ease;
+}
+#notes li:hover {
+	background-color: white;
+    box-shadow: 0 0 7px rgb(0 0 0 / 20%);
+}
+#notes li:last-child {
+    border-bottom: 1px solid #ccc;
+}
+#notes li i{
+    position: absolute;
+    display: block;
+    width: 15px;
+    height: 15px;
+    border-radius: 3px;
+    left: 10px;
+    top: 10px;
+    box-shadow: 0 0 1px 1px rgb(0 0 0 / 20%);
+}
+#notes li a{
+	font-size: .9em;
+	opacity: .8;
 }
 #notes li span {
-	line-height: 1.15;
-	font-size: 1.1em;
-	display: -webkit-box;
-	-webkit-line-clamp: 4;
-	-webkit-box-orient: vertical;
-	overflow: hidden;
-	pointer-events: none;
+    font-weight: 500;
+    font-size: 1.1em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 72%;
+    pointer-events: none;
+    overflow-x: hidden;
 }
 
 #prompt, #info {
@@ -333,6 +422,15 @@ ul li {
 	color: #222;
 }
 
+.theme-color-0 #notes,
+.theme-color-1 #notes,
+.theme-color-2 #notes,
+.theme-color-3 #notes,
+.theme-color-4 #notes,
+.theme-color-5 #notes {
+    background: linear-gradient(#fff 36px, #111 36px);
+}
+
 .theme-color-0 #toolbar, .theme-color-0 #info-button,
 .theme-color-1 #toolbar, .theme-color-1 #info-button,
 .theme-color-2 #toolbar, .theme-color-2 #info-button,
@@ -340,6 +438,44 @@ ul li {
 .theme-color-4 #toolbar, .theme-color-4 #info-button,
 .theme-color-5 #toolbar, .theme-color-5 #info-button {
     filter: invert(100%);
+}
+
+.theme-color-0 #notes li,
+.theme-color-1 #notes li,
+.theme-color-2 #notes li,
+.theme-color-3 #notes li,
+.theme-color-4 #notes li,
+.theme-color-5 #notes li {
+    color: #fff;
+    border-top-color: #252525;
+}
+
+.theme-color-0 #notes li:last-child,
+.theme-color-1 #notes li:last-child,
+.theme-color-2 #notes li:last-child,
+.theme-color-3 #notes li:last-child,
+.theme-color-4 #notes li:last-child,
+.theme-color-5 #notes li:last-child {
+    border-bottom-color: #252525;
+}
+
+.theme-color-0 #notes li:hover,
+.theme-color-1 #notes li:hover,
+.theme-color-2 #notes li:hover,
+.theme-color-3 #notes li:hover,
+.theme-color-4 #notes li:hover,
+.theme-color-5 #notes li:hover {
+    background-color: #222;
+    box-shadow: 0 0 7px rgb(60 60 60 / 20%);
+}
+
+.theme-color-0 #notes li i,
+.theme-color-1 #notes li i,
+.theme-color-2 #notes li i,
+.theme-color-3 #notes li i,
+.theme-color-4 #notes li i,
+.theme-color-5 #notes li i {
+    box-shadow: 0 0 3px 2px rgb(0 0 0 / 20%);
 }
 
 /* icons */
@@ -356,6 +492,17 @@ ul li {
 .icon-github {
 	background-image: url(../icons/github.png);
     margin: -5px 0 5px !important;
+}
+
+.icon-resize {
+    background-image: url(../icons/resize.png);
+    background-size: 18px;
+    background-position-x: 2px !important;
+    margin-bottom: 8px;
+}
+
+.icon-joystick {
+	background-image: url(../icons/joystick.png);
 }
 
 .icon-list {
