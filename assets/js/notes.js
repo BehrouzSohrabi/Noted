@@ -6,8 +6,9 @@ let optionsButton = document.getElementById('options-button'),
 	infoButton = document.getElementById('info-button'),
 	deleteButton = document.getElementById('delete-button'),
 	confirmButton = document.getElementById('confirm'),
-	cancelButton = document.getElementById('cancel'),
+	cancelButtons = document.querySelectorAll('.cancel'),
 	setThemeButtons = document.querySelectorAll('#themes-list li'),
+	promptEntries = document.querySelectorAll('#prompt .entry'),
 	titleInput = document.getElementById('title'),
 	optionsContainer = document.getElementById('options-container'),
 	listContainer = document.getElementById('list-container'),
@@ -19,7 +20,10 @@ let optionsButton = document.getElementById('options-button'),
 	joystickTop = document.getElementById('joystick-top'),
 	joystickRight = document.getElementById('joystick-right'),
 	joystickBottom = document.getElementById('joystick-bottom'),
-	joystickLeft = document.getElementById('joystick-left');
+	joystickLeft = document.getElementById('joystick-left'),
+	exportButton = document.getElementById('export-button'),
+	importButton = document.getElementById('import-button'),
+	fileInput = document.getElementById('file-input');
 
 let states = {
 	loading: true,
@@ -27,7 +31,7 @@ let states = {
 	list: false,
 	prompt: false,
 	size: [400, 300],
-	minSize: [370, 220],
+	minSize: [375, 225],
 	maxSize: [800, 500],
 	noteIndex: 0
 };
@@ -88,10 +92,64 @@ function joystickAction(e){
 	sync_options()
 }
 
+function exportNotes() {
+	const date = new Date().toISOString();
+	const jsonString = JSON.stringify(notes);
+	const blob = new Blob([jsonString], { type: 'application/json' });
+	const url = URL.createObjectURL(blob);
+	const link = document.createElement('a');
+	link.href = url;
+	link.download = `Noted-Export-${date}.txt`;
+	link.click();
+}
+
+function importNotes() {
+	if (fileInput.files.length < 1) return;
+	const file = fileInput.files[0];
+	const reader = new FileReader();
+	reader.onload = function() {
+		// check if it's in acceptable format
+		try {
+			let contents = JSON.parse(reader.result);
+			let keys = ['content', 'created', 'id', 'theme', 'title']
+			if (Array.isArray(contents)) {
+				contents.forEach(function(object) {
+					keys.forEach(function(key) {
+						if (!object.hasOwnProperty(key)) {
+							throw new Error('object is missing key: ' + key);
+						}
+					});
+				});
+				notes = contents
+				sync_notes()
+				populateList()
+				loadNote(+notes[notes.length-1]['id'])
+			} else {
+				throw new Error('Input is not an array');
+			}
+		} catch(e) {
+			togglePrompt({'target':{'dataset':{'prompt':'prompt-import'}}})
+		}
+		fileInput.value = ''
+	}
+	reader.readAsText(file);
+}
+
 function togglePrompt(e) {
+	// toggle
 	states.prompt = !states.prompt;
 	promptContainer.className = states.prompt ? '' : 'hidden';
-	if (e.target.id == 'confirm') {
+	// check to see which entry should be displayed
+	if (typeof e.target.dataset.prompt != 'undefined'){
+		promptEntries.forEach((promptEntry) => {
+			if (promptEntry.id == e.target.dataset.prompt){
+				promptEntry.className = 'entry visible'
+			}else {
+				promptEntry.className = 'entry'
+			}
+		})
+	// or the confirm button is clicked
+	} else if (e.target.id == 'confirm') {
 		deleteNote();
 		toggleOptions();
 	}
@@ -315,7 +373,14 @@ notesList.addEventListener('click', toggleNotes);
 infoButton.addEventListener('click', toggleInfo);
 infoContainer.addEventListener('click', toggleInfo);
 deleteButton.addEventListener('click', togglePrompt);
-cancelButton.addEventListener('click', togglePrompt);
+cancelButtons.forEach((cancelButton) => {
+	cancelButton.addEventListener('click', togglePrompt);
+});
+promptContainer.addEventListener('click', (e) =>{
+	if (e.target.id == 'prompt'){
+		togglePrompt(e)
+	}
+});
 confirmButton.addEventListener('click', togglePrompt);
 setThemeButtons.forEach((setThemeButton) => {
 	setThemeButton.addEventListener('click', selectTheme);
@@ -325,8 +390,10 @@ editor.on('text-change', contentChanged);
 joystickTop.addEventListener('click', joystickAction),
 joystickRight.addEventListener('click', joystickAction),
 joystickBottom.addEventListener('click', joystickAction),
-joystickLeft.addEventListener('click', joystickAction);
-
+joystickLeft.addEventListener('click', joystickAction),
+exportButton.addEventListener('click', exportNotes),
+importButton.addEventListener('click', () => { fileInput.click(); });
+fileInput.addEventListener('change', importNotes);
 // init app
 
 init();

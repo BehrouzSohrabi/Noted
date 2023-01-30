@@ -84,6 +84,10 @@ section.hidden {
 	pointer-events: none;
 }
 
+.display-none{
+	display: none;
+}
+
 #options-container {
 	border: 1px solid #ccc;
 	background: white;
@@ -128,7 +132,7 @@ section.hidden {
 	padding-left: 5px;
 }
 
-ul {
+.ul {
 	list-style: none;
 	overflow-y: auto;
 	margin: 10px 0 0;
@@ -136,7 +140,7 @@ ul {
 	text-align: left;
 }
 
-ul li {
+.ul li {
 	display: inline-block;
 	cursor: pointer;
 }
@@ -272,6 +276,32 @@ ul li {
     overflow-x: hidden;
 }
 
+#files {
+    position: absolute;
+    right: 0;
+    z-index: 1;
+    display: flex;
+    padding: 0 0 10px 30%;
+}
+#files button{
+	background-color: #fff;
+    margin: 2px 10px 0 0;
+    background-size: 17px;
+    background-position: 5px;
+    border-radius: 3px;
+    height: 24px;
+    padding: 0 10px 0 26px;
+    border: 1px solid #ddd;
+    font-weight: 600;
+    opacity: .8;
+	transition: all .2s ease;
+}
+#files button:hover{
+    border: 1px solid #bbb;
+	background-color: #f2e9d1;
+    opacity: 1;
+}
+
 #prompt, #info {
 	display: flex;
 	align-content: center;
@@ -282,7 +312,15 @@ ul li {
 	z-index: 5;
 }
 
-#prompt div, #info div {
+#prompt .entry{
+	display: none;
+}
+
+#prompt .entry.visible{
+	display: block;
+}
+
+#prompt .entry div, #info div {
     width: 170px;
     text-align: center;
     background: white;
@@ -503,6 +541,14 @@ ul li {
 
 .icon-joystick {
 	background-image: url(../icons/joystick.png);
+}
+
+.icon-export {
+	background-image: url(../icons/export.png);
+}
+
+.icon-import {
+	background-image: url(../icons/import.png);
 }
 
 .icon-list {

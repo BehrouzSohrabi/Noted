@@ -21,7 +21,7 @@
             <section id="options-container" class="hidden">
                 <div class="group">
                     <button class="icon-theme no-action labeled">Theme</button>
-                    <ul id="themes-list">
+                    <ul id="themes-list" class="ul">
                         <li class="color-0"></li>
                         <li class="color-1"></li>
                         <li class="color-2"></li>
@@ -50,21 +50,36 @@
                     <div class="meta">Modified: <span id="modified"></span></div>
                 </div>
                 <div class="group">
-                    <button id="delete-button" class="icon-delete labeled">Delete Note</button>
+                    <button id="delete-button" class="icon-delete labeled" data-prompt="prompt-delete">Delete Note</button>
                 </div>
             </section>
         </header>
 
         <section id="list-container" class="hidden">
-            <ul id="notes"></ul>
+            <div id="files">
+                <button id="export-button" class="icon-export labeled">Export</button>
+                <button id="import-button" class="icon-import labeled">Import</button>
+                <input type="file" id="file-input" class="display-none" accept=".txt" />
+            </div>
+            <ul id="notes" class="ul"></ul>
         </section>
 
         <section id="prompt" class="hidden">
-            <div class="text">Delete Note</div>
-            <div>This action cannot be undone. Are you sure?</div>
-            <div>
-                <button id="confirm">Yes</button>
-                <button id="cancel">No</button>
+            <div class="entry" id="prompt-delete">
+                <div class="text">Delete Note</div>
+                <div>This action cannot be undone. Are you sure?</div>
+                <div>
+                    <button id="confirm">Yes</button>
+                    <button class="cancel">No</button>
+                </div>
+            </div>
+            <div class="entry" id="prompt-import">
+                <span class="warning"></span>
+                <div class="text">Import Error</div>
+                <div>The format of the file is not compatible.</div>
+                <div>
+                    <button class="cancel">Okay</button>
+                </div>
             </div>
         </section>
 
