@@ -1,7 +1,8 @@
 // elements
-
 let optionsButton = document.getElementById('options-button'),
 	addButton = document.getElementById('add-button'),
+	newButton = document.getElementById('new-button'),
+	backButton = document.getElementById('back-button'),
 	listButton = document.getElementById('list-button'),
 	infoButton = document.getElementById('info-button'),
 	deleteButton = document.getElementById('delete-button'),
@@ -25,6 +26,7 @@ let optionsButton = document.getElementById('options-button'),
 	importButton = document.getElementById('import-button'),
 	fileInput = document.getElementById('file-input');
 
+// editor setup
 let states = {
 	loading: true,
 	options: false,
@@ -43,7 +45,7 @@ let newNote = {
 	created: +new Date(),
 	modified: null,
 	opened: null,
-	theme: 'color-0',
+	theme: 0,
 };
 
 let notes = [];
@@ -61,35 +63,31 @@ let editor = new Quill('#editor', {
 	placeholder: 'Start writing...',
 });
 
-
 hljs.configure({
 	languages: ['bash', 'c', 'cpp', 'csharp', 'css', 'go', 'graphql', 'java', 'javascript', 'json', 'kotlin', 'xml', 'markdown', 'objectivec', 'php', 'python', 'r', 'ruby', 'rust', 'sql', 'swift', 'typescript', 'yaml']
 });
 
 // functions
-
 function resizeBody(newSize) {
 	states.size = newSize;
 	document.body.style.width = states.size[0] + 'px';
 	document.body.style.height = states.size[1] + 'px';
 }
 
-function joystickAction(e){
+function joystickAction(e) {
 	let newSize = states.size,
 		minSize = states.minSize,
 		maxSize = states.maxSize;
-	if (e.target.id.endsWith('top') && newSize[1] > minSize[1]){
+	if (e.target.id.endsWith('top') && newSize[1] > minSize[1]) {
 		newSize[1] -= 50
-	}else if (e.target.id.endsWith('right') && newSize[0] > minSize[0]){
+	} else if (e.target.id.endsWith('right') && newSize[0] > minSize[0]) {
 		newSize[0] -= 50
-	}else if (e.target.id.endsWith('bottom') && newSize[1] < maxSize[1]){
+	} else if (e.target.id.endsWith('bottom') && newSize[1] < maxSize[1]) {
 		newSize[1] += 50
-	}else if (e.target.id.endsWith('left') && newSize[0] < maxSize[0]){
+	} else if (e.target.id.endsWith('left') && newSize[0] < maxSize[0]) {
 		newSize[0] += 50
 	}
 	resizeBody(newSize)
-	// sync with storage
-	sync_options()
 }
 
 function exportNotes() {
@@ -107,28 +105,27 @@ function importNotes() {
 	if (fileInput.files.length < 1) return;
 	const file = fileInput.files[0];
 	const reader = new FileReader();
-	reader.onload = function() {
-		// check if it's in acceptable format
+	reader.onload = function () {
 		try {
 			let contents = JSON.parse(reader.result);
 			let keys = ['content', 'created', 'id', 'theme', 'title']
 			if (Array.isArray(contents)) {
-				contents.forEach(function(object) {
-					keys.forEach(function(key) {
+				contents.forEach(function (object) {
+					keys.forEach(function (key) {
 						if (!object.hasOwnProperty(key)) {
 							throw new Error('object is missing key: ' + key);
 						}
 					});
 				});
 				notes = contents
-				sync_notes()
+				syncNotes()
 				populateList()
-				loadNote(+notes[notes.length-1]['id'])
+				loadNote(+notes[notes.length - 1]['id'])
 			} else {
 				throw new Error('Input is not an array');
 			}
-		} catch(e) {
-			togglePrompt({'target':{'dataset':{'prompt':'prompt-import'}}})
+		} catch (e) {
+			togglePrompt({ 'target': { 'dataset': { 'prompt': 'prompt-import' } } })
 		}
 		fileInput.value = ''
 	}
@@ -136,27 +133,27 @@ function importNotes() {
 }
 
 function togglePrompt(e) {
-	// toggle
+	console.log(e.target.id)
 	states.prompt = !states.prompt;
 	promptContainer.className = states.prompt ? '' : 'hidden';
-	// check to see which entry should be displayed
-	if (typeof e.target.dataset.prompt != 'undefined'){
+	if (typeof e.target.dataset.prompt != 'undefined') {
 		promptEntries.forEach((promptEntry) => {
-			if (promptEntry.id == e.target.dataset.prompt){
+			if (promptEntry.id == e.target.dataset.prompt) {
 				promptEntry.className = 'entry visible'
-			}else {
+			} else {
 				promptEntry.className = 'entry'
 			}
 		})
-	// or the confirm button is clicked
 	} else if (e.target.id == 'confirm') {
 		deleteNote();
 		toggleOptions();
 	}
 }
 
-function toggleOptions() {
-	states.options = !states.options;
+function toggleOptions(toggled = true) {
+	console.log('toggleOptions')
+	console.log(states.options, closed)
+	states.options = toggled ? !states.options : false;
 	optionsContainer.className = states.options ? '' : 'hidden';
 	if (states.options) setMeta()
 }
@@ -172,43 +169,31 @@ function toggleInfo(e) {
 	infoContainer.className = states.info ? '' : 'hidden';
 }
 
-function titleChanged(e) {
+function titleKeyUp(e) {
 	if (states.loading) return;
 	const title = e.target.value
-	// update note
 	notes[states.noteIndex]['title'] = title
-	// update modified
 	notes[states.noteIndex]['modified'] = +new Date()
 	setMeta()
-	// sync with storage
-	sync_notes()
 }
 
 function contentChanged(a, b, source) {
 	if (source != 'user') return;
 	if (states.loading) return;
 	const content = editor.getContents()
-	// update note
 	notes[states.noteIndex]['content'] = content.ops
-	// update modified
 	notes[states.noteIndex]['modified'] = +new Date()
 	setMeta()
-	// sync with storage
-	sync_notes()
 }
 
 function selectTheme(e) {
-	const theme = e.target.className
-	// set theme to body
+	const theme = +e.target.getAttribute('data-theme')
 	setTheme(theme)
-	// update note
 	notes[states.noteIndex]['theme'] = theme
-	// sync with storage
-	sync_notes()
 }
 
 function setTheme(theme) {
-	document.body.className = 'theme-' + theme
+	document.body.className = 'theme-color-' + theme
 }
 
 function setMeta() {
@@ -219,76 +204,92 @@ function setMeta() {
 
 function deleteNote() {
 	states.loading = true
-	// remove from notes array
 	notes.splice(states.noteIndex, 1);
-	// check if there is any notes left
 	if (notes.length === 0) {
 		cloneEmptyNote()
 	}
-	// open last note
 	loadLastNote()
 }
 
 function loadNote(id) {
 	const index = notes.findIndex(item => item.id == id);
 	states.noteIndex = index
-	// display the note's title, contents, theme, and meta
 	let note = notes[index]
 	titleInput.value = note.title
 	editor.setContents(note.content)
 	setTheme(note.theme)
 	setMeta()
-	// update note
 	notes[index]['opened'] = +new Date()
-	// focus on editor
 	editor.focus()
-	// sync with storage
-	sync_notes()
 	states.loading = false
 }
 
-function sync_notes() {
-	chrome.storage.sync.set({'notes': notes})
+function titleKeyDown(event) {
+	if (event.key === 'Tab') {
+		event.preventDefault();
+		editor.focus()
+	}
 }
 
-function sync_options() {
-	chrome.storage.sync.set({'options': states})
+function syncNotes() {
+	console.log('notes')
+	console.log(notes)
+	for (let i = 0; i < notes.length; i++) {
+		chrome.storage.sync.set({ ['note_' + i]: notes[i] });
+	}
+}
+
+function syncOptions() {
+	console.log('states')
+	console.log(states)
+	chrome.storage.sync.set({ 'options': states })
 }
 
 function addNote() {
 	states.loading = true
 	const emptyIndex = notes.findIndex(item => item.modified == null);
-	if (emptyIndex == -1) {
-		// add to notes array
+	console.log(emptyIndex)
+	if (emptyIndex === -1) {
+		console.log('nextId()')
+		console.log(nextId())
 		cloneEmptyNote(nextId())
-		// load the last one
 		loadLastNote()
-	}else{
+	} else {
 		loadNote(+notes[emptyIndex]['id']);
 	}
 }
 
-function cloneEmptyNote(id){
+function cloneEmptyNote(id) {
 	let noteClone = JSON.parse(JSON.stringify(newNote));
 	noteClone['created'] = +new Date()
 	noteClone['opened'] = +new Date()
+	noteClone['theme'] = Math.floor(Math.random() * 12)
 	if (typeof id != 'undefined') {
 		noteClone['id'] = id
 	}
 	notes.push(noteClone)
 }
 
-function loadLastNote(){
-	// find the last opened note and load it
+function loadLastNote() {
+	if (notes.length === 0) {
+		console.log('notes')
+		console.log(notes)
+		addNote()
+		return;
+	}
+
+	console.log(notes);
 	const note = notes.reduce((earliest, current) => {
 		return new Date(current.opened) > new Date(earliest.opened)
 			? current
 			: earliest;
 	});
+
 	loadNote(+note.id);
 }
 
 function nextId() {
+	if (notes.length === 0) return 0;
 	let lastNote = notes.reduce((highest, current) => {
 		return current.id > highest.id ? current : highest;
 	})
@@ -302,11 +303,10 @@ function populateList() {
 		const id = item.id,
 			theme = item.theme,
 			title = item.title.length > 0 ? item.title : 'Untitled Note'
-			modified = ago(item['modified'])
+		modified = ago(item['modified'])
 		list = `<li id="${id}"><i class="${theme}"></i><span>${title}</span><a>${modified}</a></li>` + list
 	});
-    notesList.innerHTML = list;
-	// update listener
+	notesList.innerHTML = list;
 	document.querySelectorAll('#notes li').forEach((noteButton) => {
 		noteButton.addEventListener('click', selectNote);
 	});
@@ -318,28 +318,24 @@ function selectNote(e) {
 }
 
 function init() {
-	// get notes
-	chrome.storage.sync.get('notes', (data_notes) => {
-		// populate notes array from storage if anything was saved before
-		if (!isEmpty(data_notes.notes)) {
-			notes = data_notes.notes;
-		}else{
-			cloneEmptyNote()
+	chrome.storage.sync.get(null, (items) => {
+		let defaultSize = states.size
+		for (let key in items) {
+			let item = items[key]
+			if (key.startsWith("note_")) {
+				notes.push(item);
+			} else if (key === "options") {
+				if (!isEmpty(item)) {
+					defaultSize = item.size;
+				}
+			}
 		}
-		loadLastNote()
-	});
-	// get options (currently only size)
-	chrome.storage.sync.get('options', (data_options) => {
-		if (!isEmpty(data_options.options)) {
-			resizeBody(data_options.options.size);
-		}else{
-			resizeBody(states.size)
-		}
+		resizeBody(defaultSize);
+		loadLastNote();
 	});
 }
 
 // helpers
-
 function isEmpty(obj) {
 	return typeof obj != 'object' || Object.keys(obj).length === 0;
 }
@@ -365,9 +361,10 @@ function suffix(value, fix) {
 }
 
 // listeners
-
 addButton.addEventListener('click', addNote);
+newButton.addEventListener('click', addNote);
 optionsButton.addEventListener('click', toggleOptions);
+backButton.addEventListener('click', toggleNotes);
 listButton.addEventListener('click', toggleNotes);
 notesList.addEventListener('click', toggleNotes);
 infoButton.addEventListener('click', toggleInfo);
@@ -376,24 +373,29 @@ deleteButton.addEventListener('click', togglePrompt);
 cancelButtons.forEach((cancelButton) => {
 	cancelButton.addEventListener('click', togglePrompt);
 });
-promptContainer.addEventListener('click', (e) =>{
-	if (e.target.id == 'prompt'){
-		togglePrompt(e)
-	}
-});
 confirmButton.addEventListener('click', togglePrompt);
 setThemeButtons.forEach((setThemeButton) => {
 	setThemeButton.addEventListener('click', selectTheme);
 });
-titleInput.addEventListener('keyup', titleChanged);
+titleInput.addEventListener('keyup', titleKeyUp);
+titleInput.addEventListener('keydown', titleKeyDown);
 editor.on('text-change', contentChanged);
 joystickTop.addEventListener('click', joystickAction),
-joystickRight.addEventListener('click', joystickAction),
-joystickBottom.addEventListener('click', joystickAction),
-joystickLeft.addEventListener('click', joystickAction),
-exportButton.addEventListener('click', exportNotes),
-importButton.addEventListener('click', () => { fileInput.click(); });
+	joystickRight.addEventListener('click', joystickAction),
+	joystickBottom.addEventListener('click', joystickAction),
+	joystickLeft.addEventListener('click', joystickAction),
+	exportButton.addEventListener('click', exportNotes),
+	importButton.addEventListener('click', () => { fileInput.click(); });
 fileInput.addEventListener('change', importNotes);
-// init app
+document.addEventListener('click', function (event) {
+	if (!optionsContainer.contains(event.target) && !optionsButton.contains(event.target)) toggleOptions(false);
+});
 
+// init app
 init();
+
+// save on exit
+window.onblur = function () {
+	syncOptions()
+	syncNotes()
+}
