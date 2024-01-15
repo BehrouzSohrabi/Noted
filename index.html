@@ -1,123 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Noted</title>
-		<link rel="stylesheet" href="assets/css/quill.snow.css" />
-		<link rel="stylesheet" href="assets/css/styles.css" />
-        <link rel="stylesheet" href="assets/css/highlight.css">
-	</head>
-	<body class="theme-default">
 
-        <header>
-            <input type="text" id="title" placeholder="Untitled Note" />
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Noted</title>
+    <link rel="stylesheet" href="assets/css/quill.snow.css" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <link rel="stylesheet" href="assets/css/highlight.css">
+</head>
 
-            <button id="options-button" class="icon-options float-right"></button>
-            <button id="list-button" class="icon-list float-right"></button>
-            <button id="add-button" class="icon-add float-right"></button>
+<body class="theme-default">
 
-            <section id="options-container" class="hidden">
-                <div class="group">
-                    <button class="icon-theme no-action labeled">Theme</button>
-                    <ul id="themes-list" class="ul">
-                        <li class="color-0"></li>
-                        <li class="color-1"></li>
-                        <li class="color-2"></li>
-                        <li class="color-3"></li>
-                        <li class="color-4"></li>
-                        <li class="color-5"></li>
-                        <li class="color-6"></li>
-                        <li class="color-7"></li>
-                        <li class="color-8"></li>
-                        <li class="color-9"></li>
-                        <li class="color-10"></li>
-                        <li class="color-11"></li>
-                    </ul>
-                </div>
-                <div class="group">
-                    <button class="icon-resize no-action labeled">Resize Note</button>
-                    <div id="resizer">
-                        <span class="icon-joystick" id="joystick-top"></span>
-                        <span class="icon-joystick" id="joystick-right"></span>
-                        <span class="icon-joystick" id="joystick-bottom"></span>
-                        <span class="icon-joystick" id="joystick-left"></span>
-                    </div>
-                </div>
-                <div class="group">
-                    <div class="meta">Created: <span id="created"></span></div>
-                    <div class="meta">Modified: <span id="modified"></span></div>
-                </div>
-                <div class="group">
-                    <button id="delete-button" class="icon-delete labeled" data-prompt="prompt-delete">Delete Note</button>
-                </div>
-            </section>
-        </header>
-
-        <section id="list-container" class="hidden">
-            <div id="files">
-                <button id="export-button" class="icon-export labeled">Export</button>
-                <button id="import-button" class="icon-import labeled">Import</button>
-                <input type="file" id="file-input" class="display-none" accept=".txt" />
+    <header>
+        <input type="text" id="title" placeholder="Untitled Note" />
+        <button id="add-button" class="icon-add tooltip"><span>New Note</span></button>
+        <button id="list-button" class="icon-list tooltip"><span>Notes</span></button>
+        <button id="options-button" class="icon-options tooltip"><span>Options</span></button>
+        <section id="options-container" class="hidden">
+            <div class="group">
+                <button class="icon-theme no-action labeled">Theme</button>
+                <ul id="themes-list" class="ul">
+                    <li class="color-0" data-theme="0"></li>
+                    <li class="color-1" data-theme="1"></li>
+                    <li class="color-2" data-theme="2"></li>
+                    <li class="color-3" data-theme="3"></li>
+                    <li class="color-4" data-theme="4"></li>
+                    <li class="color-5" data-theme="5"></li>
+                    <li class="color-6" data-theme="6"></li>
+                    <li class="color-7" data-theme="7"></li>
+                    <li class="color-8" data-theme="8"></li>
+                    <li class="color-9" data-theme="9"></li>
+                    <li class="color-10" data-theme="10"></li>
+                    <li class="color-11" data-theme="11"></li>
+                </ul>
             </div>
-            <ul id="notes" class="ul"></ul>
-        </section>
-
-        <section id="prompt" class="hidden">
-            <div class="entry" id="prompt-delete">
-                <div class="text">Delete Note</div>
-                <div>This action cannot be undone. Are you sure?</div>
-                <div>
-                    <button id="confirm">Yes</button>
-                    <button class="cancel">No</button>
+            <div class="group">
+                <button class="icon-resize no-action labeled">Resize Note</button>
+                <div id="resizer">
+                    <span class="icon-joystick" id="joystick-top"></span>
+                    <span class="icon-joystick" id="joystick-right"></span>
+                    <span class="icon-joystick" id="joystick-bottom"></span>
+                    <span class="icon-joystick" id="joystick-left"></span>
                 </div>
             </div>
-            <div class="entry" id="prompt-import">
-                <span class="warning"></span>
-                <div class="text">Import Error</div>
-                <div>The format of the file is not compatible.</div>
-                <div>
-                    <button class="cancel">Okay</button>
-                </div>
+            <div class="group">
+                <div class="meta">Created: <span id="created"></span></div>
+                <div class="meta">Modified: <span id="modified"></span></div>
+            </div>
+            <div class="group">
+                <button id="delete-button" class="icon-delete labeled" data-prompt="prompt-delete">Delete Note</button>
             </div>
         </section>
+    </header>
 
-        <section id="info" class="hidden">
-            <div class="text">Noted</div>
-            <div>A minimalist, gorgeous and private (local) notebook.</div>
+    <section id="list-container" class="hidden">
+        <div id="files">
+            <button id="new-button" class="icon-add labeled">New</button>
+            <button id="export-button" class="icon-export labeled">Export</button>
+            <button id="import-button" class="icon-import labeled">Import</button>
+            <input type="file" id="file-input" class="display-none" accept=".txt" />
+            <button id="back-button" class="icon-back labeled">Back</button>
+        </div>
+        <ul id="notes" class="ul"></ul>
+    </section>
+
+    <section id="prompt" class="hidden">
+        <div class="entry" id="prompt-delete">
+            <div class="text">Delete Note</div>
+            <div>This action cannot be undone. Are you sure?</div>
             <div>
-                <a class="icon-github" href="https://github.com/BehrouzSohrabi/Noted" target="_blank"></a>
+                <button id="confirm">Yes</button>
+                <button class="cancel">No</button>
             </div>
-        </section>
+        </div>
+        <div class="entry" id="prompt-import">
+            <span class="warning"></span>
+            <div class="text">Import Error</div>
+            <div>The format of the file is not compatible.</div>
+            <div>
+                <button class="cancel">Okay</button>
+            </div>
+        </div>
+    </section>
 
-		<section id="editor"></section>
+    <section id="info" class="hidden">
+        <div class="text">Noted</div>
+        <div>A minimalist, gorgeous and private (local) notebook.</div>
+        <div>
+            <a class="icon-github" href="https://github.com/BehrouzSohrabi/Noted" target="_blank"></a>
+        </div>
+    </section>
 
-		<footer>
-			<div id="toolbar">
-				<div class="ql-formats">
-					<button class="ql-bold"></button>
-					<button class="ql-italic"></button>
-					<button class="ql-underline"></button>
-					<button class="ql-strike"></button>
-					<button class="ql-blockquote"></button>
-					<button class="ql-code-block"></button>
-				</div>
-				<div class="ql-formats">
-					<select class="ql-align"></select>
-					<button class="ql-indent" value="-1"></button>
-					<button class="ql-indent" value="+1"></button>
-				</div>
-				<div class="ql-formats">
-					<button class="ql-list" value="ordered"></button>
-					<button class="ql-list" value="bullet"></button>
-				</div>
-			</div>
-            <button id="info-button" class="icon-info float-right"></button>
-		</footer>
+    <section id="editor"></section>
 
-        <script src="assets/js/highlight.js"></script>
-		<script src="assets/js/quill.js"></script>
-		<script src="assets/js/notes.js"></script>
-	</body>
+    <footer>
+        <div id="toolbar">
+            <div class="ql-formats">
+                <button class="ql-bold"></button>
+                <button class="ql-italic"></button>
+                <button class="ql-underline"></button>
+                <button class="ql-strike"></button>
+                <button class="ql-blockquote"></button>
+                <button class="ql-code-block"></button>
+            </div>
+            <div class="ql-formats">
+                <select class="ql-align"></select>
+                <button class="ql-indent" value="-1"></button>
+                <button class="ql-indent" value="+1"></button>
+            </div>
+            <div class="ql-formats">
+                <button class="ql-list" value="ordered"></button>
+                <button class="ql-list" value="bullet"></button>
+            </div>
+        </div>
+        <button id="info-button" class="icon-info float-right"></button>
+    </footer>
+
+    <script src="assets/js/highlight.js"></script>
+    <script src="assets/js/quill.js"></script>
+    <script src="assets/js/notes.js"></script>
+</body>
+
 </html>
