@@ -24,7 +24,18 @@ let optionsButton = document.getElementById('options-button'),
 	joystickLeft = document.getElementById('joystick-left'),
 	exportButton = document.getElementById('export-button'),
 	importButton = document.getElementById('import-button'),
-	fileInput = document.getElementById('file-input');
+	fileInput = document.getElementById('file-input'),
+	findButton = document.getElementById('find-button'),
+	findContainer = document.getElementById('find-container'),
+	findInput = document.getElementById('find-input'),
+	findCount = document.getElementById('find-count'),
+	findPrev = document.getElementById('find-prev'),
+	findNext = document.getElementById('find-next');
+
+// variables
+let currentIndex = 0;
+let searchResults = [];
+let searchVal = '';
 
 // editor setup
 let states = {
@@ -32,8 +43,9 @@ let states = {
 	options: false,
 	list: false,
 	prompt: false,
+	find: false,
 	size: [400, 300],
-	minSize: [375, 225],
+	minSize: [400, 225],
 	maxSize: [800, 500],
 	noteIndex: 0
 };
@@ -133,7 +145,6 @@ function importNotes() {
 }
 
 function togglePrompt(e) {
-	console.log(e.target.id)
 	states.prompt = !states.prompt;
 	promptContainer.className = states.prompt ? '' : 'hidden';
 	if (typeof e.target.dataset.prompt != 'undefined') {
@@ -151,15 +162,13 @@ function togglePrompt(e) {
 }
 
 function toggleOptions(toggled = true) {
-	console.log('toggleOptions')
-	console.log(states.options, closed)
 	states.options = toggled ? !states.options : false;
 	optionsContainer.className = states.options ? '' : 'hidden';
 	if (states.options) setMeta()
 }
 
-function toggleNotes() {
-	states.list = !states.list;
+function toggleNotes(toggled = true) {
+	states.list = toggled ? !states.list : false;
 	listContainer.className = states.list ? '' : 'hidden';
 	if (states.list) populateList()
 }
@@ -232,31 +241,25 @@ function titleKeyDown(event) {
 }
 
 function syncNotes() {
-	console.log('notes')
-	console.log(notes)
 	for (let i = 0; i < notes.length; i++) {
 		chrome.storage.sync.set({ ['note_' + i]: notes[i] });
 	}
 }
 
 function syncOptions() {
-	console.log('states')
-	console.log(states)
 	chrome.storage.sync.set({ 'options': states })
 }
 
 function addNote() {
 	states.loading = true
 	const emptyIndex = notes.findIndex(item => item.modified == null);
-	console.log(emptyIndex)
 	if (emptyIndex === -1) {
-		console.log('nextId()')
-		console.log(nextId())
 		cloneEmptyNote(nextId())
 		loadLastNote()
 	} else {
 		loadNote(+notes[emptyIndex]['id']);
 	}
+	toggleNotes(false)
 }
 
 function cloneEmptyNote(id) {
@@ -272,13 +275,10 @@ function cloneEmptyNote(id) {
 
 function loadLastNote() {
 	if (notes.length === 0) {
-		console.log('notes')
-		console.log(notes)
 		addNote()
 		return;
 	}
 
-	console.log(notes);
 	const note = notes.reduce((earliest, current) => {
 		return new Date(current.opened) > new Date(earliest.opened)
 			? current
@@ -304,7 +304,7 @@ function populateList() {
 			theme = item.theme,
 			title = item.title.length > 0 ? item.title : 'Untitled Note'
 		modified = ago(item['modified'])
-		list = `<li id="${id}"><i class="${theme}"></i><span>${title}</span><a>${modified}</a></li>` + list
+		list = `<li id="${id}"><i class="color-${theme}"></i><span>${title}</span><a>${modified}</a></li>` + list
 	});
 	notesList.innerHTML = list;
 	document.querySelectorAll('#notes li').forEach((noteButton) => {
@@ -360,6 +360,95 @@ function suffix(value, fix) {
 	return value + ' ' + fix + (value > 1 ? 's' : '') + ' ago'
 }
 
+// find
+function toggleFind() {
+	states.find = !states.find;
+	if (states.find) {
+		findContainer.style.display = 'flex';
+		findInput.focus();
+	} else {
+		findContainer.style.display = 'none';
+		findInput.value = '';
+		resetHighlights();
+		editor.focus();
+	}
+}
+
+function findText(value) {
+	searchVal = value.toLowerCase();
+	if (!searchVal) {
+		resetHighlights();
+		findCount.textContent = '0/0';
+		return;
+	}
+	performSearch();
+}
+
+function performSearch() {
+	const text = editor.getText().toLowerCase();
+	searchResults = [];
+	currentIndex = -1;
+
+	let startIndex = 0, matchIndex;
+	while ((matchIndex = text.indexOf(searchVal, startIndex)) > -1) {
+		searchResults.push(matchIndex);
+		startIndex = matchIndex + searchVal.length;
+	}
+
+	highlightSearchResults();
+	navigate(1);
+}
+
+function resetHighlights() {
+	const delta = editor.getContents();
+	delta.ops.forEach(op => {
+		if (op.attributes && op.attributes.background) {
+			delete op.attributes.background;
+		}
+	});
+	editor.setContents(delta);
+}
+
+function highlightSearchResults() {
+	resetHighlights();
+	searchResults.forEach(index => {
+		editor.formatText(index, searchVal.length, { 'background': 'yellow' });
+	});
+	updateMatchCount();
+}
+
+function navigate(direction) {
+	if (!searchResults.length) return;
+	highlightSearchResults();
+
+	currentIndex = (currentIndex + direction + searchResults.length) % searchResults.length;
+	const currentMatchIndex = searchResults[currentIndex];
+	editor.formatText(currentMatchIndex, searchVal.length, { 'background': 'orange' });
+	updateMatchCount();
+
+	// Scroll to the current highlighted match
+	editor.setSelection(currentMatchIndex, searchVal.length, 'silent');
+	editor.focus();
+	findInput.focus();
+}
+
+function highlightSearchResults() {
+	resetHighlights();
+	searchResults.forEach(index => {
+		editor.formatText(index, searchVal.length, { 'background': 'yellow' });
+	});
+}
+
+function updateMatchCount() {
+	const countText = searchResults.length ? `${currentIndex + 1}/${searchResults.length}` : '0/0';
+	findCount.textContent = countText;
+}
+
+function updateMatchCount() {
+	const countText = searchResults.length ? `${currentIndex + 1}/${searchResults.length}` : '0/0';
+	findCount.textContent = countText;
+}
+
 // listeners
 addButton.addEventListener('click', addNote);
 newButton.addEventListener('click', addNote);
@@ -387,8 +476,33 @@ joystickTop.addEventListener('click', joystickAction),
 	exportButton.addEventListener('click', exportNotes),
 	importButton.addEventListener('click', () => { fileInput.click(); });
 fileInput.addEventListener('change', importNotes);
-document.addEventListener('click', function (event) {
+findButton.addEventListener('click', toggleFind);
+findInput.addEventListener('input', (event) => { findText(event.target.value); });
+findInput.addEventListener('keydown', (event) => {
+	if (event.key === "Enter") {
+		event.preventDefault();
+		navigate(1);
+	} else if (event.key === "ArrowDown") {
+		event.preventDefault();
+		navigate(1);
+	} else if (event.key === "ArrowUp") {
+		event.preventDefault();
+		navigate(-1);
+	} else if (event.key === "Escape") {
+		event.preventDefault();
+		toggleFind();
+	}
+});
+findNext.addEventListener('click', () => { navigate(1); });
+findPrev.addEventListener('click', () => { navigate(-1); });
+document.addEventListener('click', (event) => {
 	if (!optionsContainer.contains(event.target) && !optionsButton.contains(event.target)) toggleOptions(false);
+});
+document.addEventListener('keydown', (event) => {
+	if (event.ctrlKey && event.key === 'f') {
+		event.preventDefault();
+		toggleFind();
+	}
 });
 
 // init app

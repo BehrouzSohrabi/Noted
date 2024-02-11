@@ -12,6 +12,7 @@ body {
 	min-width: 320px;
 	min-height: 240px;
 	font-weight: 400;
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, "Roboto", "Apple Color Emoji", "Helvetica Neue", sans-serif;
 	font-size: 0.8rem;
 	text-rendering: optimizeLegibility;
 }
@@ -64,40 +65,55 @@ header input {
 	padding: 0 0 0 10px;
 	height: 34px;
 	line-height: 34px;
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, "Roboto", "Apple Color Emoji", "Helvetica Neue", sans-serif;
 	font-size: 1.2em;
+
 }
 
 button.tooltip {
 	position: relative;
 }
-button.tooltip span{
+
+button.tooltip>span {
 	display: block;
 	position: absolute;
 	pointer-events: none;
 	opacity: 0;
 	background: #444;
 	color: #ddd;
-	padding: 3px 7px;
-	bottom: -25px;
+	padding: 4px 7px;
+	bottom: -27px;
 	z-index: 3;
 	right: 0;
 	transition: opacity .2s ease;
 	white-space: nowrap;
 	border-radius: 3px;
 }
-button.tooltip:hover span{
+
+button.tooltip>span>span {
+	border: 1px solid;
+	border-radius: 3px;
+	font-size: 8px;
+	padding: 1px 3px;
+	margin: 0 -2px 0 4px;
+	font-weight: 100;
+	vertical-align: middle;
+}
+
+button.tooltip:hover>span {
 	opacity: .9;
 }
-button.tooltip:hover span::before{
+
+button.tooltip:hover>span::before {
 	content: "";
-    display: block;
-    background: #444;
-    width: 6px;
-    height: 6px;
-    position: absolute;
-    top: -3px;
+	display: block;
+	background: #444;
+	width: 6px;
+	height: 6px;
+	position: absolute;
+	top: -3px;
 	right: 8px;
-    transform: rotate(45deg);
+	transform: rotate(45deg);
 }
 
 section {
@@ -122,6 +138,7 @@ section.hidden {
 
 #options-container {
 	border: 1px solid #ccc;
+    border-radius: 0 0 0 5px;
 	background: white;
 	text-align: right;
 	position: absolute;
@@ -252,7 +269,7 @@ section.hidden {
 	display: flex;
 	width: 100%;
 	margin-top: 36px !important;
-    height: calc(100% - 36px);
+	height: calc(100% - 36px);
 	margin: 0;
 	flex-direction: column;
 	background: #eee;
@@ -402,6 +419,7 @@ section.hidden {
 /* quill editor updates */
 .ql-container {
 	border: none !important;
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, "Roboto", "Apple Color Emoji", "Helvetica Neue", sans-serif;
 }
 
 .ql-toolbar {
@@ -425,6 +443,10 @@ section.hidden {
 	bottom: 100%;
 	right: 0;
 	top: auto !important;
+}
+
+.ql-picker.ql-expanded .ql-picker-label {
+	background-color: #666;
 }
 
 .ql-picker-item[data-value='DEFAULT']:before {
@@ -547,15 +569,6 @@ section.hidden {
 	color: #222;
 }
 
-.theme-color-0 #notes,
-.theme-color-1 #notes,
-.theme-color-2 #notes,
-.theme-color-3 #notes,
-.theme-color-4 #notes,
-.theme-color-5 #notes {
-	background: #252525;
-}
-
 .theme-color-0 #toolbar,
 .theme-color-0 #info-button,
 .theme-color-1 #toolbar,
@@ -569,44 +582,6 @@ section.hidden {
 .theme-color-5 #toolbar,
 .theme-color-5 #info-button {
 	filter: invert(100%);
-}
-
-.theme-color-0 #notes li,
-.theme-color-1 #notes li,
-.theme-color-2 #notes li,
-.theme-color-3 #notes li,
-.theme-color-4 #notes li,
-.theme-color-5 #notes li {
-	color: #fff;
-	border-top-color: #383838;
-}
-
-.theme-color-0 #notes li:last-child,
-.theme-color-1 #notes li:last-child,
-.theme-color-2 #notes li:last-child,
-.theme-color-3 #notes li:last-child,
-.theme-color-4 #notes li:last-child,
-.theme-color-5 #notes li:last-child {
-	border-bottom-color: #383838;
-}
-
-.theme-color-0 #notes li:hover,
-.theme-color-1 #notes li:hover,
-.theme-color-2 #notes li:hover,
-.theme-color-3 #notes li:hover,
-.theme-color-4 #notes li:hover,
-.theme-color-5 #notes li:hover {
-	background-color: #333;
-	box-shadow: 0 0 7px rgb(60 60 60 / 30%);
-}
-
-.theme-color-0 #notes li i,
-.theme-color-1 #notes li i,
-.theme-color-2 #notes li i,
-.theme-color-3 #notes li i,
-.theme-color-4 #notes li i,
-.theme-color-5 #notes li i {
-	box-shadow: 0 0 3px 2px rgb(0 0 0 / 50%);
 }
 
 /* icons */
@@ -665,6 +640,14 @@ section.hidden {
 	background-image: url(../icons/add.png);
 }
 
+.icon-find {
+	background-image: url(../icons/find.png);
+}
+
+.icon-arrow {
+	background-image: url(../icons/arrow.png);
+}
+
 .icon-info {
 	background-image: url(../icons/info.png);
 	position: absolute;
@@ -673,7 +656,58 @@ section.hidden {
 	right: 6px;
 }
 
-@media screen and (max-width: 400px) {
+#find-container {
+	position: absolute;
+	z-index: 1;
+	width: 215px;
+	top: 35px;
+	right: -1px;
+	border: 1px solid #ccc;
+    border-radius: 0 0 0 5px;
+	background: white;
+	align-items: center;
+}
+
+#find-container input {
+	border: 0;
+	padding: 0 0 0 7px;
+	flex-grow: 1;
+	outline: none !important;
+	opacity: .4;
+	transition: opacity .2s ease;
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, "Roboto", "Apple Color Emoji", "Helvetica Neue", sans-serif;
+
+}
+
+#find-container input:focus {
+	opacity: 1;
+}
+
+#find-container span {
+	font-size: 10px;
+	color: #999;
+	margin-right: 2px;
+	pointer-events: none;
+}
+
+#find-container button {
+	min-width: 18px;
+	top: 0;
+	opacity: .4;
+	transition: opacity .2s ease;
+}
+
+#find-container button:hover {
+	opacity: 1;
+}
+
+#find-next {
+	transform: rotate(180deg);
+}
+
+#find-count {}
+
+@media screen and (max-width: 390px) {
 	#info-button {
 		display: none;
 	}

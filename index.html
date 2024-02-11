@@ -12,9 +12,15 @@
 </head>
 
 <body class="theme-default">
-
+    <div id="find-container" style="display: none;">
+        <input type="text" id="find-input" placeholder="Type to search...">
+        <span id="find-count">0/0</span>
+        <button id="find-prev" class="icon-arrow"></button>
+        <button id="find-next" class="icon-arrow"></button>
+    </div>
     <header>
         <input type="text" id="title" placeholder="Untitled Note" />
+        <button id="find-button" class="icon-find tooltip"><span>Find<span>CTRL + F</span></span></button>
         <button id="add-button" class="icon-add tooltip"><span>New Note</span></button>
         <button id="list-button" class="icon-list tooltip"><span>Notes</span></button>
         <button id="options-button" class="icon-options tooltip"><span>Options</span></button>
@@ -106,6 +112,7 @@
                 <button class="ql-code-block"></button>
             </div>
             <div class="ql-formats">
+                <button class="ql-direction" value="rtl"></button>
                 <select class="ql-align"></select>
                 <button class="ql-indent" value="-1"></button>
                 <button class="ql-indent" value="+1"></button>

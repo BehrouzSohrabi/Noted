@@ -1,10 +1,13 @@
 {
   "name": "Noted - Minimalist Notebook",
-  "version": "1.0.2",
+  "version": "1.0.5",
   "description": "Write notes in a minimalist, gorgeous and private notebook.",
   "manifest_version": 3,
   "author": "Behrouz Sohrabi",
-  "permissions": ["storage", "unlimitedStorage"],
+  "permissions": [
+    "storage",
+    "unlimitedStorage"
+  ],
   "offline_enabled": true,
   "icons": {
     "128": "assets/icons/icon.png"
