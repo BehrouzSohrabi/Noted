@@ -57,17 +57,98 @@ header {
 	display: flex;
 }
 
+#title-container {
+	display: flex;
+	flex-grow: 1;
+}
+
 header input {
 	border: none;
 	outline: none;
-	flex-grow: 1;
 	margin: 0;
 	padding: 0 0 0 10px;
 	height: 34px;
 	line-height: 34px;
 	font-family: system-ui, -apple-system, BlinkMacSystemFont, "Roboto", "Apple Color Emoji", "Helvetica Neue", sans-serif;
 	font-size: 1.2em;
+	flex-grow: 1;
+}
 
+#emojis {
+	position: absolute;
+	width: 202px;
+	top: 34px;
+	left: -1px;
+	max-height: 110px;
+	overflow: scroll;
+	z-index: 2;
+	background: #fff;
+	border: 1px solid #ccc;
+	border-radius: 0 0 5px;
+}
+
+#note-icon-button {
+	z-index: 1;
+	border: none;
+	outline: none;
+	height: 34px;
+	display: flex;
+	align-items: center;
+	background: none;
+	margin-right: -10px;
+	cursor: pointer;
+}
+
+#note-icon-button b {
+	font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+	font-size: 1.6em;
+}
+
+#note-icon-button b:empty {
+	filter: grayscale(1);
+}
+
+#note-icon-button b:empty::before {
+	display: block;
+	content: '🔸';
+	height: 100%;
+	line-height: 22px;
+	text-align: center;
+}
+
+#note-icon-button span {
+	bottom: -24px;
+	left: 5px;
+}
+
+#note-icon-button,
+#emojis.hidden {
+	display: none
+}
+
+#note-icon-remove {
+	position: absolute;
+	left: 172px;
+	top: 40px;
+	z-index: 3;
+	width: 16px;
+	height: 16px;
+	display: none;
+}
+
+.has-icon #note-icon-remove {
+	display: block;
+}
+
+#note-icon-remove.hidden {
+	display: none;
+}
+
+#title-container.focus #note-icon-button,
+header:hover #note-icon-button,
+#note-icon-container.has-icon #note-icon-button,
+#emojis:not(.hidden)+#note-icon-button {
+	display: flex;
 }
 
 button.tooltip {
@@ -88,6 +169,11 @@ button.tooltip>span {
 	transition: opacity .2s ease;
 	white-space: nowrap;
 	border-radius: 3px;
+}
+
+button.tooltip.tooltip-left>span {
+	right: auto;
+	left: 0;
 }
 
 button.tooltip>span>span {
@@ -116,6 +202,11 @@ button.tooltip:hover>span::before {
 	transform: rotate(45deg);
 }
 
+button.tooltip.tooltip-left:hover>span::before {
+	right: auto;
+	left: 8px;
+}
+
 section {
 	position: absolute;
 	width: 100%;
@@ -138,7 +229,7 @@ section.hidden {
 
 #options-container {
 	border: 1px solid #ccc;
-    border-radius: 0 0 0 5px;
+	border-radius: 0 0 0 5px;
 	background: white;
 	text-align: right;
 	position: absolute;
@@ -272,7 +363,7 @@ section.hidden {
 	height: calc(100% - 36px);
 	margin: 0;
 	flex-direction: column;
-	background: #eee;
+	background: #fff;
 }
 
 #notes li * {
@@ -282,23 +373,23 @@ section.hidden {
 #notes li {
 	line-height: 35px;
 	min-height: 35px;
-	padding: 0 10px 0 30px;
+	padding: 0 25px 0 10px;
 	overflow: hidden;
 	display: flex;
 	justify-content: space-between;
 	position: relative;
 	color: #333;
-	border-top: 1px solid #ccc;
+	border-top: 1px solid rgba(0, 0, 0, .1);
 	transition: all .3s ease;
 }
 
 #notes li:hover {
-	background-color: white;
+	transform: scale(1.01);
 	box-shadow: 0 0 7px rgb(0 0 0 / 20%);
 }
 
 #notes li:last-child {
-	border-bottom: 1px solid #ccc;
+	border-bottom: 1px solid rgba(0, 0, 0, .1);
 }
 
 #notes li i {
@@ -306,14 +397,17 @@ section.hidden {
 	display: block;
 	width: 15px;
 	height: 15px;
-	border-radius: 3px;
-	left: 10px;
+	right: 5px;
 	top: 10px;
-	box-shadow: 0 0 1px 1px rgb(0 0 0 / 20%);
+	border-radius: 50%;
+}
+
+#notes li b {
+	font-size: 16px;
 }
 
 #notes li a {
-	font-size: .9em;
+	font-size: .8em;
 	opacity: .8;
 }
 
@@ -586,13 +680,17 @@ section.hidden {
 
 /* icons */
 .icon-delete {
-	background-image: url(../icons/delete.png);
+	background-image: url(../icons/delete.svg);
 	background-color: #ffe2e2;
 	border: 5px solid #ffe2e2;
 	border-radius: 2px;
 	padding-left: 20px !important;
 	line-height: 1.5 !important;
 	height: 28px !important;
+}
+
+.icon-remove {
+	background-image: url(../icons/remove.svg);
 }
 
 .icon-back {
@@ -605,7 +703,7 @@ section.hidden {
 }
 
 .icon-resize {
-	background-image: url(../icons/resize.png);
+	background-image: url(../icons/resize.svg);
 	background-size: 18px;
 	background-position-x: 2px !important;
 	margin-bottom: 8px;
@@ -633,7 +731,7 @@ section.hidden {
 }
 
 .icon-theme {
-	background-image: url(../icons/theme.png);
+	background-image: url(../icons/theme.svg);
 }
 
 .icon-add {
@@ -641,7 +739,7 @@ section.hidden {
 }
 
 .icon-find {
-	background-image: url(../icons/find.png);
+	background-image: url(../icons/find.svg);
 }
 
 .icon-arrow {
@@ -657,26 +755,29 @@ section.hidden {
 }
 
 #find-container {
+	display: none;
 	position: absolute;
 	z-index: 1;
-	width: 215px;
+	width: 195px;
 	top: 35px;
 	right: -1px;
 	border: 1px solid #ccc;
-    border-radius: 0 0 0 5px;
+	border-radius: 0 0 0 5px;
 	background: white;
 	align-items: center;
 }
 
 #find-container input {
+	width: 140px;
 	border: 0;
 	padding: 0 0 0 7px;
+	margin: 4px 0;
+	min-height: 18px;
 	flex-grow: 1;
 	outline: none !important;
 	opacity: .4;
 	transition: opacity .2s ease;
 	font-family: system-ui, -apple-system, BlinkMacSystemFont, "Roboto", "Apple Color Emoji", "Helvetica Neue", sans-serif;
-
 }
 
 #find-container input:focus {
@@ -699,6 +800,11 @@ section.hidden {
 
 #find-container button:hover {
 	opacity: 1;
+}
+
+#find-container[data-matches="0"] span,
+#find-container[data-matches="0"] button {
+	display: none;
 }
 
 #find-next {

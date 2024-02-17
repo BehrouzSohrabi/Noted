@@ -7,19 +7,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Noted</title>
     <link rel="stylesheet" href="assets/css/quill.snow.css" />
+    <link rel="stylesheet" href="assets/css/emojis.css" />
     <link rel="stylesheet" href="assets/css/styles.css" />
     <link rel="stylesheet" href="assets/css/highlight.css">
 </head>
 
 <body class="theme-default">
-    <div id="find-container" style="display: none;">
+    <div id="find-container" data-matches="0">
         <input type="text" id="find-input" placeholder="Type to search...">
         <span id="find-count">0/0</span>
         <button id="find-prev" class="icon-arrow"></button>
         <button id="find-next" class="icon-arrow"></button>
     </div>
     <header>
-        <input type="text" id="title" placeholder="Untitled Note" />
+        <div id="title-container">
+            <div id="note-icon-container">
+                <div id="emojis" class="hidden"></div>
+                <button id="note-icon-button" class="tooltip tooltip-left"><b></b><span>Change Icon</span></button>
+                <button id="note-icon-remove" class="hidden"><span>Remove Icon</span></button>
+            </div>
+            <input type="text" id="title" placeholder="Untitled Note" />
+        </div>
         <button id="find-button" class="icon-find tooltip"><span>Find<span>CTRL + F</span></span></button>
         <button id="add-button" class="icon-add tooltip"><span>New Note</span></button>
         <button id="list-button" class="icon-list tooltip"><span>Notes</span></button>
@@ -125,6 +133,7 @@
         <button id="info-button" class="icon-info float-right"></button>
     </footer>
 
+    <script src="assets/js/emojis.js"></script>
     <script src="assets/js/highlight.js"></script>
     <script src="assets/js/quill.js"></script>
     <script src="assets/js/notes.js"></script>

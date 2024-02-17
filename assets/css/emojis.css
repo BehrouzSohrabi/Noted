@@ -1,0 +1,36 @@
+#emojis {
+    display: flex;
+    flex-direction: column;
+}
+
+#emojis input {
+    font-size: 1em;
+    height: 25px;
+    padding: 0 0 0 7px;
+    box-shadow: 0 0 9px 3px #fff;
+    position: relative;
+}
+
+ul#emojis-list-emojis {
+    margin: 0 3px;
+    padding: 0;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+ul#emojis-list-emojis li {
+    display: inline-block;
+    text-align: center;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    cursor: pointer;
+    border: none;
+    font-size: 1.4em;
+    width: 11%;
+    border-radius: 4px;
+}
+
+ul#emojis-list-emojis li:hover {
+    background-color: #eee;
+}

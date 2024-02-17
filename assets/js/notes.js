@@ -11,6 +11,10 @@ let optionsButton = document.getElementById('options-button'),
 	setThemeButtons = document.querySelectorAll('#themes-list li'),
 	promptEntries = document.querySelectorAll('#prompt .entry'),
 	titleInput = document.getElementById('title'),
+	iconContainer = document.getElementById('note-icon-container'),
+	iconButton = document.getElementById('note-icon-button'),
+	iconRemoveButton = document.getElementById('note-icon-remove'),
+	emojisContainer = document.getElementById('emojis'),
 	optionsContainer = document.getElementById('options-container'),
 	listContainer = document.getElementById('list-container'),
 	infoContainer = document.getElementById('info'),
@@ -44,6 +48,8 @@ let states = {
 	list: false,
 	prompt: false,
 	find: false,
+	icon: false,
+	emojis: false,
 	size: [400, 300],
 	minSize: [400, 225],
 	maxSize: [800, 500],
@@ -53,6 +59,7 @@ let states = {
 let newNote = {
 	id: 1,
 	title: '',
+	icon: '',
 	content: [],
 	created: +new Date(),
 	modified: null,
@@ -62,7 +69,7 @@ let newNote = {
 
 let notes = [];
 
-let editor = new Quill('#editor', {
+const editor = new Quill('#editor', {
 	modules: {
 		syntax: true,
 		toolbar: '#toolbar',
@@ -77,6 +84,10 @@ let editor = new Quill('#editor', {
 
 hljs.configure({
 	languages: ['bash', 'c', 'cpp', 'csharp', 'css', 'go', 'graphql', 'java', 'javascript', 'json', 'kotlin', 'xml', 'markdown', 'objectivec', 'php', 'python', 'r', 'ruby', 'rust', 'sql', 'swift', 'typescript', 'yaml']
+});
+
+const emojiPicker = new EmojiSearcher('emojis', (selectedEmoji) => {
+    selectIcon(selectedEmoji);
 });
 
 // functions
@@ -173,14 +184,14 @@ function toggleNotes(toggled = true) {
 	if (states.list) populateList()
 }
 
-function toggleInfo(e) {
+function toggleInfo() {
 	states.info = !states.info;
 	infoContainer.className = states.info ? '' : 'hidden';
 }
 
-function titleKeyUp(e) {
+function titleKeyUp(event) {
 	if (states.loading) return;
-	const title = e.target.value
+	const title = event.target.value
 	notes[states.noteIndex]['title'] = title
 	notes[states.noteIndex]['modified'] = +new Date()
 	setMeta()
@@ -205,6 +216,18 @@ function setTheme(theme) {
 	document.body.className = 'theme-color-' + theme
 }
 
+function selectIcon(icon, remove = false) {
+	if (remove || icon != false) {
+		setIcon(icon)
+		notes[states.noteIndex]['icon'] = icon
+	}
+}
+
+function setIcon(icon) {
+	iconContainer.className = icon ? 'has-icon' : ''
+	iconButton.children[0].innerHTML = icon ? icon : '';
+}
+
 function setMeta() {
 	const note = notes[states.noteIndex]
 	createdInfo.innerHTML = ago(note['created'])
@@ -226,6 +249,8 @@ function loadNote(id) {
 	let note = notes[index]
 	titleInput.value = note.title
 	editor.setContents(note.content)
+	toggleFind(false)
+	setIcon(note.icon)
 	setTheme(note.theme)
 	setMeta()
 	notes[index]['opened'] = +new Date()
@@ -237,6 +262,16 @@ function titleKeyDown(event) {
 	if (event.key === 'Tab') {
 		event.preventDefault();
 		editor.focus()
+	}
+}
+
+function toggleEmojis(toggled = true) {
+	states.emojis = toggled ? !states.emojis : false;
+	emojisContainer.className = states.emojis ? '' : 'hidden';
+	iconRemoveButton.className = states.emojis ? 'icon-remove tooltip' : 'hidden'
+	if (states.emojis) {
+		emojiPicker.clear()
+		emojiPicker.focus()
 	}
 }
 
@@ -302,9 +337,10 @@ function populateList() {
 	sorted.forEach((item) => {
 		const id = item.id,
 			theme = item.theme,
-			title = item.title.length > 0 ? item.title : 'Untitled Note'
+			title = item.title.length > 0 ? item.title : 'Untitled Note',
+			icon = item.icon ? `<b>${item.icon}</b> ` : '';
 		modified = ago(item['modified'])
-		list = `<li id="${id}"><i class="color-${theme}"></i><span>${title}</span><a>${modified}</a></li>` + list
+		list = `<li id="${id}"><i class="color-${theme}"></i><span>${icon}${title}</span><a>${modified}</a></li>` + list
 	});
 	notesList.innerHTML = list;
 	document.querySelectorAll('#notes li').forEach((noteButton) => {
@@ -361,24 +397,25 @@ function suffix(value, fix) {
 }
 
 // find
-function toggleFind() {
-	states.find = !states.find;
+function toggleFind(toggled = true) {
+	states.find = toggled ? !states.find : false;
 	if (states.find) {
 		findContainer.style.display = 'flex';
 		findInput.focus();
 	} else {
 		findContainer.style.display = 'none';
+		findContainer.setAttribute('data-matches', 0);
 		findInput.value = '';
-		resetHighlights();
 		editor.focus();
 	}
+	resetHighlights();
 }
 
 function findText(value) {
 	searchVal = value.toLowerCase();
 	if (!searchVal) {
 		resetHighlights();
-		findCount.textContent = '0/0';
+		findCount.textContent = '';
 		return;
 	}
 	performSearch();
@@ -388,13 +425,11 @@ function performSearch() {
 	const text = editor.getText().toLowerCase();
 	searchResults = [];
 	currentIndex = -1;
-
 	let startIndex = 0, matchIndex;
 	while ((matchIndex = text.indexOf(searchVal, startIndex)) > -1) {
 		searchResults.push(matchIndex);
 		startIndex = matchIndex + searchVal.length;
 	}
-
 	highlightSearchResults();
 	navigate(1);
 }
@@ -411,6 +446,7 @@ function resetHighlights() {
 
 function highlightSearchResults() {
 	resetHighlights();
+	findContainer.setAttribute('data-matches', searchResults.length);
 	searchResults.forEach(index => {
 		editor.formatText(index, searchVal.length, { 'background': 'yellow' });
 	});
@@ -432,20 +468,8 @@ function navigate(direction) {
 	findInput.focus();
 }
 
-function highlightSearchResults() {
-	resetHighlights();
-	searchResults.forEach(index => {
-		editor.formatText(index, searchVal.length, { 'background': 'yellow' });
-	});
-}
-
 function updateMatchCount() {
-	const countText = searchResults.length ? `${currentIndex + 1}/${searchResults.length}` : '0/0';
-	findCount.textContent = countText;
-}
-
-function updateMatchCount() {
-	const countText = searchResults.length ? `${currentIndex + 1}/${searchResults.length}` : '0/0';
+	const countText = searchResults.length ? `${currentIndex + 1}/${searchResults.length}` : '';
 	findCount.textContent = countText;
 }
 
@@ -468,6 +492,14 @@ setThemeButtons.forEach((setThemeButton) => {
 });
 titleInput.addEventListener('keyup', titleKeyUp);
 titleInput.addEventListener('keydown', titleKeyDown);
+titleInput.addEventListener('focus', (event) => {
+	event.target.parentElement.className = 'focus'
+});
+titleInput.addEventListener('blur', (event) => {
+	event.target.parentElement.className = ''
+});
+iconButton.addEventListener('click', toggleEmojis);
+iconRemoveButton.addEventListener('click', () => { selectIcon(false, true) });
 editor.on('text-change', contentChanged);
 joystickTop.addEventListener('click', joystickAction),
 	joystickRight.addEventListener('click', joystickAction),
@@ -497,6 +529,7 @@ findNext.addEventListener('click', () => { navigate(1); });
 findPrev.addEventListener('click', () => { navigate(-1); });
 document.addEventListener('click', (event) => {
 	if (!optionsContainer.contains(event.target) && !optionsButton.contains(event.target)) toggleOptions(false);
+	if (!emojisContainer.contains(event.target) && !iconButton.contains(event.target)) toggleEmojis(false);
 });
 document.addEventListener('keydown', (event) => {
 	if (event.ctrlKey && event.key === 'f') {
@@ -510,6 +543,7 @@ init();
 
 // save on exit
 window.onblur = function () {
+	toggleFind(false);
 	syncOptions()
 	syncNotes()
 }
