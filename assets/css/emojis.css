@@ -1,21 +1,17 @@
-#emojis {
+#emojis .dialog-card {
     display: flex;
     flex-direction: column;
 }
 
-#emojis input {
-    font-size: 1em;
-    height: 25px;
-    padding: 0 0 0 7px;
-    box-shadow: 0 0 9px 3px #fff;
-    position: relative;
+#emoji-results {
+    max-height: 108px;
+    overflow-y: auto;
+    margin-top: 10px;
 }
 
 ul#emojis-list-emojis {
-    margin: 0 3px;
+    margin: 0 -4px;
     padding: 0;
-    overflow-y: auto;
-    flex-grow: 1;
 }
 
 ul#emojis-list-emojis li {
@@ -27,10 +23,13 @@ ul#emojis-list-emojis li {
     cursor: pointer;
     border: none;
     font-size: 1.4em;
-    width: 11%;
+    width: 32px;
+    height: 36px;
+    line-height: 36px;
     border-radius: 4px;
 }
 
-ul#emojis-list-emojis li:hover {
+ul#emojis-list-emojis li:hover,
+ul#emojis-list-emojis li.selected {
     background-color: #eee;
 }

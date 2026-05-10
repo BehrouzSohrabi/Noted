@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="assets/css/highlight.css">
 </head>
 
-<body class="theme-default">
+<body class="theme-default" id="panel-view">
     <div id="find-container" data-matches="0">
         <input type="text" id="find-input" placeholder="Type to search...">
         <span id="find-count">0/0</span>
@@ -121,10 +121,10 @@
             <div class="group footer end">
                 <div class="group gap-4">
                     <div class="meta">
-                        <button id="switch-button" class="labeled icon-panel" type="button">Panel View</button>
+                        <button id="switch-button" class="labeled icon-popup" type="button">Popup View</button>
                     </div>
                     <div class="meta">
-                        <button id="resize-button" class="labeled" type="button">Resize Popup</button>
+                        <button id="resize-button" class="labeled display-none" type="button">Resize Popup</button>
                     </div>
                 </div>
                 <button id="info-button" class="icon-info" type="button" aria-label="About Noted"></button>
